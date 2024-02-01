@@ -1,0 +1,8 @@
+<li {{#if checked}}style="text-decoration: line-through;" {{/if}}>
+    {{name}}
+    {{#if checked}}
+    <input type="checkbox" checked="true" hx-post="/toggle" hx-swap="none" />
+    {{else}}
+    <input type="checkbox" hx-post="/toggle" hx-swap="none" />
+    {{/if}}
+</li>
