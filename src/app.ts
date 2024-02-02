@@ -15,8 +15,10 @@ app.get("/", (_req, res) => {
   res.render("home", { groceryList: groceries });
 });
 
-app.post("/toggle", (_req, res) => {
-  res.send("");
+app.post("/groceries/:name/toggle-checked", (req, res) => {
+  const { name } = req.params;
+  const grocery = Groceries.toggleChecked(name);
+  res.render("partials/grocery_li", { ...grocery, layout: false });
 });
 
 export default app;
