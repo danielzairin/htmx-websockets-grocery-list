@@ -1,7 +1,7 @@
 import express from "express";
 import path from "node:path";
 import { engine } from "express-handlebars";
-import { mocks } from "./mocks";
+import { Groceries } from "./models/groceries";
 
 const app = express();
 
@@ -11,7 +11,8 @@ const viewsFolder = path.resolve(__dirname, "views");
 app.set("views", viewsFolder);
 
 app.get("/", (_req, res) => {
-  res.render("home", { groceryList: mocks.groceryList });
+  const groceries = Groceries.list();
+  res.render("home", { groceryList: groceries });
 });
 
 app.post("/toggle", (_req, res) => {
