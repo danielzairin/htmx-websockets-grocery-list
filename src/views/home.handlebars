@@ -1,5 +1,11 @@
-<ol>
+<ol id="groceries">
     {{#each groceryList}}
         {{>grocery_li}}
     {{/each}}
 </ol>
+
+<form hx-post="/groceries" hx-target="#groceries" hx-swap="beforeend">
+    <label for="name">Name</label>
+    <input id="name" type="text" required="true" name="name" placeholder="Eggs" >
+    <button>Add</button>
+</form>

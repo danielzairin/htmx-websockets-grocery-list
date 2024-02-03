@@ -4,5 +4,3 @@ export type Grocery = {
 };
 
 export type GroceryList = Array<Grocery>;
-
-export * as mocks from "./types";

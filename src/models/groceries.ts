@@ -29,3 +29,11 @@ export function toggleChecked(name: string): Grocery {
 
   return updatedGrocery;
 }
+
+export function create(name: string): Grocery {
+  return db.insert(groceries).values({ name }).returning().get();
+}
+
+export function del(name: string): void {
+  db.delete(groceries).where(eq(groceries.name, name)).run();
+}

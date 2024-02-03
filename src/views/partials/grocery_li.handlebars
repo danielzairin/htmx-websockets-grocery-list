@@ -1,8 +1,9 @@
 <li {{#if checked}}style="text-decoration: line-through;"{{/if}} >
-    {{name}}
     {{#if checked}}
     <input type="checkbox" checked="true" hx-post="/groceries/{{name}}/toggle-checked" hx-target="closest li" hx-swap="outerHTML" />
     {{else}}
     <input type="checkbox" hx-post="/groceries/{{name}}/toggle-checked" hx-target="closest li" hx-swap="outerHTML" />
     {{/if}}
+    {{name}}
+    <button hx-delete="/groceries/{{name}}" hx-target="closest li" hx-swap="outerHTML" hx-confirm="Delete {{name}}?">Delete</button>
 </li>
