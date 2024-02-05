@@ -4,6 +4,7 @@ import { engine } from "express-handlebars";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { Groceries } from "./models/groceries";
+import { Sessions } from "./models/sessions";
 
 const app = Express();
 
@@ -24,12 +25,12 @@ app.get("/", (req, res) => {
   let sessionCode = getSessionCode(req);
 
   if (!sessionCode) {
-    sessionCode = "XOXO";
-    res.cookie("session_code", sessionCode);
+    res.render("enter_code");
+    return;
   }
 
   const groceries = Groceries.list(sessionCode);
-  res.render("home", { groceryList: groceries });
+  res.render("home", { groceryList: groceries, sessionCode });
 });
 
 app.post("/groceries/:name/toggle-checked", (req, res) => {
@@ -66,6 +67,13 @@ app.delete("/groceries/:name", (req, res) => {
   const { params } = req;
   Groceries.del(params.name);
   res.send(null);
+});
+
+app.post("/session/authorize", (req, res) => {
+  const sessionCode = req.body.session_code as string;
+  const session = Sessions.init(sessionCode);
+  res.cookie("session_code", session.code);
+  res.redirect(303, "/");
 });
 
 export default app;
