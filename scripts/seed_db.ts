@@ -1,10 +1,18 @@
 import { db } from "../src/db";
-import { groceries } from "../src/db/tables";
+import { groceries, sessions } from "../src/db/tables";
+
+const session = db
+  .insert(sessions)
+  .values({
+    code: "XOXO",
+  })
+  .returning()
+  .get();
 
 db.insert(groceries)
   .values([
-    { name: "Apples" },
-    { name: "Bananas" },
-    { name: "Cheese", checked: true },
+    { name: "Apples", sessionCode: session.code },
+    { name: "Bananas", sessionCode: session.code },
+    { name: "Cheese", checked: true, sessionCode: session.code },
   ])
   .run();

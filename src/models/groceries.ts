@@ -5,8 +5,12 @@ import { Grocery } from "../types";
 
 export * as Groceries from "./groceries";
 
-export function list(): Grocery[] {
-  return db.select().from(groceries).all();
+export function list(sessionCode: string): Grocery[] {
+  return db
+    .select()
+    .from(groceries)
+    .where(eq(groceries.sessionCode, sessionCode))
+    .all();
 }
 
 export function toggleChecked(name: string): Grocery {
@@ -30,8 +34,8 @@ export function toggleChecked(name: string): Grocery {
   return updatedGrocery;
 }
 
-export function create(name: string): Grocery {
-  return db.insert(groceries).values({ name }).returning().get();
+export function create(name: string, sessionCode: string): Grocery {
+  return db.insert(groceries).values({ name, sessionCode }).returning().get();
 }
 
 export function del(name: string): void {
