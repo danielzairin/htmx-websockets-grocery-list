@@ -11,8 +11,8 @@ const session = db
 
 db.insert(groceries)
   .values([
-    { name: "Apples", sessionCode: session.code },
-    { name: "Bananas", sessionCode: session.code },
-    { name: "Cheese", checked: true, sessionCode: session.code },
+    { name: "Apples", sessionCode: session.code, position: 1 },
+    { name: "Bananas", sessionCode: session.code, position: 2 },
+    { name: "Cheese", checked: true, sessionCode: session.code, position: 3 },
   ])
   .run();

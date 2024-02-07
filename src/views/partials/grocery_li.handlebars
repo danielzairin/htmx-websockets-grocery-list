@@ -1,4 +1,4 @@
-<li {{#if checked}}style="text-decoration: line-through;"{{/if}} >
+<li {{#if checked}}style="text-decoration: line-through;"{{/if}} data-name="{{name}}" >
     {{#if checked}}
     <input type="checkbox" checked="true" hx-post="/groceries/{{name}}/toggle-checked" hx-target="closest li" hx-swap="outerHTML" />
     {{else}}

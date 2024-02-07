@@ -11,6 +11,7 @@ const app = Express();
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
+app.use(Express.static(path.resolve(__dirname, "../public")));
 
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
@@ -74,6 +75,26 @@ app.post("/session/authorize", (req, res) => {
   const session = Sessions.init(sessionCode);
   res.cookie("session_code", session.code);
   res.redirect(303, "/");
+});
+
+app.post("/groceries/sort", (req, res) => {
+  const sessionCode = getSessionCode(req);
+  if (!sessionCode) {
+    res.status(401).send();
+    return;
+  }
+
+  const { sorted_name, sorted_new_position } = req.body;
+  const sortedGroceries = Groceries.reorder(
+    sessionCode,
+    sorted_name,
+    Number(sorted_new_position)
+  );
+
+  res.render("partials/sortable_grocery_list", {
+    groceryList: sortedGroceries,
+    layout: false,
+  });
 });
 
 export default app;

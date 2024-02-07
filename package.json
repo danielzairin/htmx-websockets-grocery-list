@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "tsx watch ./src/index.ts"
+    "dev": "tsx watch ./src/index.ts",
+    "build": "esbuild src/public/index.js --bundle --outfile=public/bundle.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.3.0",
@@ -11,7 +12,8 @@
     "hbs": "^4.2.0",
     "morgan": "^1.10.0",
     "mustache": "^4.2.0",
-    "mustache-express": "^1.3.2"
+    "mustache-express": "^1.3.2",
+    "sortablejs": "^1.15.2"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
@@ -21,6 +23,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.13",
     "drizzle-kit": "^0.20.14",
+    "esbuild": "^0.20.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }

@@ -15,6 +15,7 @@ export const groceries = sqliteTable("groceries", {
   name: text("id").primaryKey(),
   checked: integer("checked", { mode: "boolean" }).notNull().default(false),
   sessionCode: text("sessionCode").notNull(),
+  position: integer("position").notNull(),
 });
 
 export const groceriesRelations = relations(groceries, ({ one }) => ({
