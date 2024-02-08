@@ -2,15 +2,18 @@
     <p>Code: {{sessionCode}}</p>
 </div>
 
-<form id="groceries-form" hx-post="/groceries/sort" hx-trigger="end" hx-target="#groceries" hx-swap="innerHTML" hx-select="li">
-    <ol id="groceries">
-        {{#each groceryList}}
-            {{>grocery_li}}
-        {{/each}}
-    </ol>
-    <input type="hidden" id="sorted_name" name="sorted_name" value="">
-    <input type="hidden" id="sorted_new_position" name="sorted_new_position" value="">
-</form>
+<div hx-ext="ws" ws-connect="/ws">
+    <form id="groceries-form" ws-send hx-trigger="end">
+        <ol id="groceries">
+            {{#each groceryList}}
+                {{>grocery_li}}
+            {{/each}}
+        </ol>
+        <input type="hidden" name="ws_action" value="sort">
+        <input type="hidden" id="sorted_name" name="sorted_name" value="">
+        <input type="hidden" id="sorted_new_position" name="sorted_new_position" value="">
+    </form>
+</div>
 
 <form hx-post="/groceries" hx-target="#groceries" hx-swap="beforeend">
     <label for="name">Name</label>

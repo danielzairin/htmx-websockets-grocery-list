@@ -573,7 +573,7 @@
       });
       plugins.push(plugin);
     },
-    pluginEvent: function pluginEvent(eventName, sortable2, evt) {
+    pluginEvent: function pluginEvent(eventName, sortable, evt) {
       var _this = this;
       this.eventCanceled = false;
       evt.cancel = function() {
@@ -581,67 +581,67 @@
       };
       var eventNameGlobal = eventName + "Global";
       plugins.forEach(function(plugin) {
-        if (!sortable2[plugin.pluginName])
+        if (!sortable[plugin.pluginName])
           return;
-        if (sortable2[plugin.pluginName][eventNameGlobal]) {
-          sortable2[plugin.pluginName][eventNameGlobal](_objectSpread2({
-            sortable: sortable2
+        if (sortable[plugin.pluginName][eventNameGlobal]) {
+          sortable[plugin.pluginName][eventNameGlobal](_objectSpread2({
+            sortable
           }, evt));
         }
-        if (sortable2.options[plugin.pluginName] && sortable2[plugin.pluginName][eventName]) {
-          sortable2[plugin.pluginName][eventName](_objectSpread2({
-            sortable: sortable2
+        if (sortable.options[plugin.pluginName] && sortable[plugin.pluginName][eventName]) {
+          sortable[plugin.pluginName][eventName](_objectSpread2({
+            sortable
           }, evt));
         }
       });
     },
-    initializePlugins: function initializePlugins(sortable2, el, defaults2, options) {
+    initializePlugins: function initializePlugins(sortable, el, defaults2, options) {
       plugins.forEach(function(plugin) {
         var pluginName = plugin.pluginName;
-        if (!sortable2.options[pluginName] && !plugin.initializeByDefault)
+        if (!sortable.options[pluginName] && !plugin.initializeByDefault)
           return;
-        var initialized = new plugin(sortable2, el, sortable2.options);
-        initialized.sortable = sortable2;
-        initialized.options = sortable2.options;
-        sortable2[pluginName] = initialized;
+        var initialized = new plugin(sortable, el, sortable.options);
+        initialized.sortable = sortable;
+        initialized.options = sortable.options;
+        sortable[pluginName] = initialized;
         _extends(defaults2, initialized.defaults);
       });
-      for (var option2 in sortable2.options) {
-        if (!sortable2.options.hasOwnProperty(option2))
+      for (var option2 in sortable.options) {
+        if (!sortable.options.hasOwnProperty(option2))
           continue;
-        var modified = this.modifyOption(sortable2, option2, sortable2.options[option2]);
+        var modified = this.modifyOption(sortable, option2, sortable.options[option2]);
         if (typeof modified !== "undefined") {
-          sortable2.options[option2] = modified;
+          sortable.options[option2] = modified;
         }
       }
     },
-    getEventProperties: function getEventProperties(name, sortable2) {
+    getEventProperties: function getEventProperties(name, sortable) {
       var eventProperties = {};
       plugins.forEach(function(plugin) {
         if (typeof plugin.eventProperties !== "function")
           return;
-        _extends(eventProperties, plugin.eventProperties.call(sortable2[plugin.pluginName], name));
+        _extends(eventProperties, plugin.eventProperties.call(sortable[plugin.pluginName], name));
       });
       return eventProperties;
     },
-    modifyOption: function modifyOption(sortable2, name, value) {
+    modifyOption: function modifyOption(sortable, name, value) {
       var modifiedValue;
       plugins.forEach(function(plugin) {
-        if (!sortable2[plugin.pluginName])
+        if (!sortable[plugin.pluginName])
           return;
         if (plugin.optionListeners && typeof plugin.optionListeners[name] === "function") {
-          modifiedValue = plugin.optionListeners[name].call(sortable2[plugin.pluginName], value);
+          modifiedValue = plugin.optionListeners[name].call(sortable[plugin.pluginName], value);
         }
       });
       return modifiedValue;
     }
   };
   function dispatchEvent(_ref) {
-    var sortable2 = _ref.sortable, rootEl2 = _ref.rootEl, name = _ref.name, targetEl = _ref.targetEl, cloneEl2 = _ref.cloneEl, toEl = _ref.toEl, fromEl = _ref.fromEl, oldIndex2 = _ref.oldIndex, newIndex2 = _ref.newIndex, oldDraggableIndex2 = _ref.oldDraggableIndex, newDraggableIndex2 = _ref.newDraggableIndex, originalEvent = _ref.originalEvent, putSortable2 = _ref.putSortable, extraEventProperties = _ref.extraEventProperties;
-    sortable2 = sortable2 || rootEl2 && rootEl2[expando];
-    if (!sortable2)
+    var sortable = _ref.sortable, rootEl2 = _ref.rootEl, name = _ref.name, targetEl = _ref.targetEl, cloneEl2 = _ref.cloneEl, toEl = _ref.toEl, fromEl = _ref.fromEl, oldIndex2 = _ref.oldIndex, newIndex2 = _ref.newIndex, oldDraggableIndex2 = _ref.oldDraggableIndex, newDraggableIndex2 = _ref.newDraggableIndex, originalEvent = _ref.originalEvent, putSortable2 = _ref.putSortable, extraEventProperties = _ref.extraEventProperties;
+    sortable = sortable || rootEl2 && rootEl2[expando];
+    if (!sortable)
       return;
-    var evt, options = sortable2.options, onName = "on" + name.charAt(0).toUpperCase() + name.substr(1);
+    var evt, options = sortable.options, onName = "on" + name.charAt(0).toUpperCase() + name.substr(1);
     if (window.CustomEvent && !IE11OrLess && !Edge) {
       evt = new CustomEvent(name, {
         bubbles: true,
@@ -661,7 +661,7 @@
     evt.newDraggableIndex = newDraggableIndex2;
     evt.originalEvent = originalEvent;
     evt.pullMode = putSortable2 ? putSortable2.lastPutMode : void 0;
-    var allEventProperties = _objectSpread2(_objectSpread2({}, extraEventProperties), PluginManager.getEventProperties(name, sortable2));
+    var allEventProperties = _objectSpread2(_objectSpread2({}, extraEventProperties), PluginManager.getEventProperties(name, sortable));
     for (var option2 in allEventProperties) {
       evt[option2] = allEventProperties[option2];
     }
@@ -669,13 +669,13 @@
       rootEl2.dispatchEvent(evt);
     }
     if (options[onName]) {
-      options[onName].call(sortable2, evt);
+      options[onName].call(sortable, evt);
     }
   }
   var _excluded = ["evt"];
-  var pluginEvent2 = function pluginEvent3(eventName, sortable2) {
+  var pluginEvent2 = function pluginEvent3(eventName, sortable) {
     var _ref = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {}, originalEvent = _ref.evt, data = _objectWithoutProperties(_ref, _excluded);
-    PluginManager.pluginEvent.bind(Sortable)(eventName, sortable2, _objectSpread2({
+    PluginManager.pluginEvent.bind(Sortable)(eventName, sortable, _objectSpread2({
       dragEl,
       parentEl,
       ghostEl,
@@ -702,7 +702,7 @@
       },
       dispatchSortableEvent: function dispatchSortableEvent(name) {
         _dispatchEvent({
-          sortable: sortable2,
+          sortable,
           name,
           originalEvent
         });
@@ -788,13 +788,13 @@
   };
   var _detectNearestEmptySortable = function _detectNearestEmptySortable2(x, y) {
     var ret;
-    sortables.some(function(sortable2) {
-      var threshold = sortable2[expando].options.emptyInsertThreshold;
-      if (!threshold || lastChild(sortable2))
+    sortables.some(function(sortable) {
+      var threshold = sortable[expando].options.emptyInsertThreshold;
+      if (!threshold || lastChild(sortable))
         return;
-      var rect = getRect(sortable2), insideHorizontally = x >= rect.left - threshold && x <= rect.right + threshold, insideVertically = y >= rect.top - threshold && y <= rect.bottom + threshold;
+      var rect = getRect(sortable), insideHorizontally = x >= rect.left - threshold && x <= rect.right + threshold, insideVertically = y >= rect.top - threshold && y <= rect.bottom + threshold;
       if (insideHorizontally && insideVertically) {
-        return ret = sortable2;
+        return ret = sortable;
       }
     });
     return ret;
@@ -1850,7 +1850,7 @@
     evt.cancelable && evt.preventDefault();
   }
   function _onMove(fromEl, toEl, dragEl2, dragRect, targetEl, targetRect, originalEvent, willInsertAfter) {
-    var evt, sortable2 = fromEl[expando], onMoveFn = sortable2.options.onMove, retVal;
+    var evt, sortable = fromEl[expando], onMoveFn = sortable.options.onMove, retVal;
     if (window.CustomEvent && !IE11OrLess && !Edge) {
       evt = new CustomEvent("move", {
         bubbles: true,
@@ -1870,7 +1870,7 @@
     evt.originalEvent = originalEvent;
     fromEl.dispatchEvent(evt);
     if (onMoveFn) {
-      retVal = onMoveFn.call(sortable2, evt, originalEvent);
+      retVal = onMoveFn.call(sortable, evt, originalEvent);
     }
     return retVal;
   }
@@ -1880,15 +1880,15 @@
   function _unsilent() {
     _silent = false;
   }
-  function _ghostIsFirst(evt, vertical, sortable2) {
-    var firstElRect = getRect(getChild(sortable2.el, 0, sortable2.options, true));
-    var childContainingRect = getChildContainingRectFromElement(sortable2.el, sortable2.options, ghostEl);
+  function _ghostIsFirst(evt, vertical, sortable) {
+    var firstElRect = getRect(getChild(sortable.el, 0, sortable.options, true));
+    var childContainingRect = getChildContainingRectFromElement(sortable.el, sortable.options, ghostEl);
     var spacer = 10;
     return vertical ? evt.clientX < childContainingRect.left - spacer || evt.clientY < firstElRect.top && evt.clientX < firstElRect.right : evt.clientY < childContainingRect.top - spacer || evt.clientY < firstElRect.bottom && evt.clientX < firstElRect.left;
   }
-  function _ghostIsLast(evt, vertical, sortable2) {
-    var lastElRect = getRect(lastChild(sortable2.el, sortable2.options.draggable));
-    var childContainingRect = getChildContainingRectFromElement(sortable2.el, sortable2.options, ghostEl);
+  function _ghostIsLast(evt, vertical, sortable) {
+    var lastElRect = getRect(lastChild(sortable.el, sortable.options.draggable));
+    var childContainingRect = getChildContainingRectFromElement(sortable.el, sortable.options, ghostEl);
     var spacer = 10;
     return vertical ? evt.clientX > childContainingRect.right + spacer || evt.clientY > lastElRect.bottom && evt.clientX > lastElRect.left : evt.clientY > childContainingRect.bottom + spacer || evt.clientX > lastElRect.right && evt.clientY > lastElRect.top;
   }
@@ -2232,23 +2232,28 @@
   var sortable_esm_default = Sortable;
 
   // src/public/index.js
-  var groceryListForm = document.querySelector("#groceries-form");
-  var groceryList = document.querySelector("#groceries");
-  var sortable = new sortable_esm_default(groceryList, {
-    animation: 150,
-    ghostClass: "blue-background-class",
-    onSort: function(event) {
-      const name = event.item.getAttribute("data-name");
-      const newPosition = event.newIndex + 1;
-      document.querySelector("#sorted_name").setAttribute("value", name);
-      document.querySelector("#sorted_new_position").setAttribute("value", newPosition);
-    },
-    onEnd: function() {
-      this.option("disabled", true);
-    }
-  });
-  groceryListForm.addEventListener("htmx:afterSwap", () => {
-    sortable.option("disabled", false);
+  function initSortableGroceries() {
+    const groceryList = document.querySelector("#groceries");
+    return new sortable_esm_default(groceryList, {
+      animation: 150,
+      ghostClass: "blue-background-class",
+      onSort: function(event) {
+        const name = event.item.getAttribute("data-name");
+        const newPosition = event.newIndex + 1;
+        document.querySelector("#sorted_name").setAttribute("value", name);
+        document.querySelector("#sorted_new_position").setAttribute("value", newPosition);
+      },
+      onEnd: function() {
+        this.option("disabled", true);
+      }
+    });
+  }
+  window.onload = () => {
+    initSortableGroceries();
+  };
+  window.addEventListener("htmx:wsAfterMessage", (e) => {
+    console.log("wsAfterMessage", e);
+    initSortableGroceries();
   });
 })();
 /*! Bundled license information:

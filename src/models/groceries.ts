@@ -72,16 +72,13 @@ export function reorder(
   const currentPosition = targetGrocery.position;
 
   if (newPosition > currentPosition) {
-    console.log(`${name} is moving UP`);
     const updates = db
       .update(groceries)
       .set({ position: sql`${groceries.position} - 1` })
       .where(between(groceries.position, currentPosition, newPosition))
       .returning()
       .all();
-    console.log({ updates });
   } else if (newPosition < currentPosition) {
-    console.log(`${name} is moving DOWN`);
     db.update(groceries)
       .set({ position: sql`${groceries.position} + 1` })
       .where(between(groceries.position, newPosition, currentPosition))
@@ -99,8 +96,6 @@ export function reorder(
     .where(eq(groceries.sessionCode, sessionCode))
     .orderBy(groceries.position)
     .all();
-
-  console.log({ name, newPosition, currentPosition, newGroceryList });
 
   return newGroceryList;
 }

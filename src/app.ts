@@ -1,19 +1,21 @@
 import Express, { urlencoded } from "express";
 import path from "node:path";
-import { engine } from "express-handlebars";
+import { ExpressHandlebars } from "express-handlebars";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { Groceries } from "./models/groceries";
 import { Sessions } from "./models/sessions";
+import expressWs from "express-ws";
 
-const app = Express();
+const { app, getWss } = expressWs(Express());
 
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use(Express.static(path.resolve(__dirname, "../public")));
 
-app.engine("handlebars", engine());
+const hbs = new ExpressHandlebars({});
+app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 const viewsFolder = path.resolve(__dirname, "views");
 app.set("views", viewsFolder);
@@ -77,23 +79,38 @@ app.post("/session/authorize", (req, res) => {
   res.redirect(303, "/");
 });
 
-app.post("/groceries/sort", (req, res) => {
+app.ws("/ws", (ws, req) => {
   const sessionCode = getSessionCode(req);
   if (!sessionCode) {
-    res.status(401).send();
+    ws.close();
     return;
   }
 
-  const { sorted_name, sorted_new_position } = req.body;
-  const sortedGroceries = Groceries.reorder(
-    sessionCode,
-    sorted_name,
-    Number(sorted_new_position)
-  );
+  ws.on("message", async (rawMessage) => {
+    const message = JSON.parse(rawMessage.toString());
+    switch (message["ws_action"]) {
+      case "sort": {
+        const { sorted_name, sorted_new_position } = message;
+        const sortedGroceries = Groceries.reorder(
+          sessionCode,
+          sorted_name,
+          Number(sorted_new_position)
+        );
 
-  res.render("partials/sortable_grocery_list", {
-    groceryList: sortedGroceries,
-    layout: false,
+        for (const c of getWss().clients) {
+          if (c.readyState !== c.OPEN) continue;
+          c.send(
+            `${await hbs.render(
+              path.resolve(
+                __dirname,
+                "views/partials/sortable_grocery_list.handlebars"
+              ),
+              { groceryList: sortedGroceries }
+            )}`
+          );
+        }
+      }
+    }
   });
 });
 
