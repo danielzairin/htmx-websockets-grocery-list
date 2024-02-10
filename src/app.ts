@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { Groceries } from "./models/groceries";
 import { Sessions } from "./models/sessions";
 import expressWs from "express-ws";
+import type WebSocket from "ws";
 
 const { app, getWss } = expressWs(Express());
 
@@ -43,12 +44,18 @@ app.post("/session/authorize", (req, res) => {
   res.redirect(303, "/");
 });
 
+const connections: Record<string, WebSocket[]> = {};
+
 app.ws("/ws", (ws, req) => {
   const sessionCode = getSessionCode(req);
   if (!sessionCode) {
     ws.close();
     return;
   }
+
+  connections[sessionCode] = connections[sessionCode]
+    ? [...connections[sessionCode], ws]
+    : [ws];
 
   ws.on("message", async (rawMessage) => {
     const message = JSON.parse(rawMessage.toString());
@@ -82,9 +89,9 @@ app.ws("/ws", (ws, req) => {
       }
     }
 
-    for (const c of getWss().clients) {
-      if (c.readyState !== c.OPEN) continue;
-      c.send(
+    for (const w of connections[sessionCode]) {
+      if (w.readyState !== w.OPEN) continue;
+      w.send(
         `${await hbs.render(
           path.resolve(
             __dirname,
