@@ -1,9 +1,13 @@
 <li {{#if checked}}style="text-decoration: line-through;"{{/if}} data-name="{{name}}">
-    <form style="display: inline;" >
+    <form style="display: inline;">
         <input ws-send type="checkbox" {{#if checked}}checked="true"{{/if}} />
         <input type="hidden" name="ws_action" value="toggle-checked" />
         <input type="hidden" name="grocery_name" value="{{name}}" />
     </form>
     <span>{{name}}</span>
-    <button hx-delete="/groceries/{{name}}" hx-target="closest li" hx-swap="outerHTML" hx-confirm="Delete {{name}}?">Delete</button>
+    <form ws-send style="display: inline;">
+        <button>Delete</button>
+        <input type="hidden" name="ws_action" value="delete-grocery" />
+        <input type="hidden" name="grocery_name" value="{{name}}" />
+    </form>
 </li>

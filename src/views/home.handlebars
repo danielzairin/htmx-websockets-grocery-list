@@ -13,12 +13,13 @@
         <input type="hidden" id="sorted_name" name="sorted_name" value="">
         <input type="hidden" id="sorted_new_position" name="sorted_new_position" value="">
     </form>
-</div>
 
-<form hx-post="/groceries" hx-target="#groceries" hx-swap="beforeend">
-    <label for="name">Name</label>
-    <input id="name" type="text" required="true" name="name" placeholder="Eggs">
-    <button>Add</button>
-</form>
+    <form ws-send>
+        <label for="name">Name</label>
+        <input id="name" type="text" required="true" name="grocery_name" placeholder="Eggs">
+        <input type="hidden" name="ws_action" value="add-grocery"/>
+        <button>Add</button>
+    </form>
+</div>
 
 <script src="/bundle.js"></script>

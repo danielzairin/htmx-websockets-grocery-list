@@ -36,30 +36,6 @@ app.get("/", (req, res) => {
   res.render("home", { groceryList: groceries, sessionCode });
 });
 
-app.post("/groceries", (req, res) => {
-  const sessionCode = getSessionCode(req);
-  if (!sessionCode) {
-    res.status(401).send();
-    return;
-  }
-
-  const { body } = req;
-  const grocery = Groceries.create(body.name, sessionCode);
-  res.render("partials/grocery_li", { ...grocery, layout: false });
-});
-
-app.delete("/groceries/:name", (req, res) => {
-  const sessionCode = getSessionCode(req);
-  if (!sessionCode) {
-    res.status(401).send();
-    return;
-  }
-
-  const { params } = req;
-  Groceries.del(params.name);
-  res.send(null);
-});
-
 app.post("/session/authorize", (req, res) => {
   const sessionCode = req.body.session_code as string;
   const session = Sessions.init(sessionCode);
@@ -90,6 +66,18 @@ app.ws("/ws", (ws, req) => {
       case "toggle-checked": {
         const { grocery_name } = message;
         Groceries.toggleChecked(grocery_name);
+        break;
+      }
+
+      case "delete-grocery": {
+        const { grocery_name } = message;
+        Groceries.del(grocery_name);
+        break;
+      }
+
+      case "add-grocery": {
+        const { grocery_name } = message;
+        Groceries.create(grocery_name, sessionCode);
         break;
       }
     }
