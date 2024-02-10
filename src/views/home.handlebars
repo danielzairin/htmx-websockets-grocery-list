@@ -3,12 +3,12 @@
 </div>
 
 <div hx-ext="ws" ws-connect="/ws">
-    <form id="groceries-form" ws-send hx-trigger="end">
-        <ol id="groceries">
-            {{#each groceryList}}
-                {{>grocery_li}}
-            {{/each}}
-        </ol>
+    <ol id="groceries">
+        {{#each groceryList}}
+        {{>grocery_li}}
+        {{/each}}
+    </ol>
+    <form id="groceries-form" ws-send hx-trigger="end from:body">
         <input type="hidden" name="ws_action" value="sort">
         <input type="hidden" id="sorted_name" name="sorted_name" value="">
         <input type="hidden" id="sorted_new_position" name="sorted_new_position" value="">
@@ -17,7 +17,7 @@
 
 <form hx-post="/groceries" hx-target="#groceries" hx-swap="beforeend">
     <label for="name">Name</label>
-    <input id="name" type="text" required="true" name="name" placeholder="Eggs" >
+    <input id="name" type="text" required="true" name="name" placeholder="Eggs">
     <button>Add</button>
 </form>
 

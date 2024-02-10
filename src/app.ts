@@ -36,18 +36,6 @@ app.get("/", (req, res) => {
   res.render("home", { groceryList: groceries, sessionCode });
 });
 
-app.post("/groceries/:name/toggle-checked", (req, res) => {
-  const sessionCode = getSessionCode(req);
-  if (!sessionCode) {
-    res.status(401).send();
-    return;
-  }
-
-  const { params } = req;
-  const grocery = Groceries.toggleChecked(params.name);
-  res.render("partials/grocery_li", { ...grocery, layout: false });
-});
-
 app.post("/groceries", (req, res) => {
   const sessionCode = getSessionCode(req);
   if (!sessionCode) {
@@ -91,25 +79,32 @@ app.ws("/ws", (ws, req) => {
     switch (message["ws_action"]) {
       case "sort": {
         const { sorted_name, sorted_new_position } = message;
-        const sortedGroceries = Groceries.reorder(
+        Groceries.reorder(
           sessionCode,
           sorted_name,
           Number(sorted_new_position)
         );
-
-        for (const c of getWss().clients) {
-          if (c.readyState !== c.OPEN) continue;
-          c.send(
-            `${await hbs.render(
-              path.resolve(
-                __dirname,
-                "views/partials/sortable_grocery_list.handlebars"
-              ),
-              { groceryList: sortedGroceries }
-            )}`
-          );
-        }
+        break;
       }
+
+      case "toggle-checked": {
+        const { grocery_name } = message;
+        Groceries.toggleChecked(grocery_name);
+        break;
+      }
+    }
+
+    for (const c of getWss().clients) {
+      if (c.readyState !== c.OPEN) continue;
+      c.send(
+        `${await hbs.render(
+          path.resolve(
+            __dirname,
+            "views/partials/sortable_grocery_list.handlebars"
+          ),
+          { groceryList: Groceries.list(sessionCode) }
+        )}`
+      );
     }
   });
 });
